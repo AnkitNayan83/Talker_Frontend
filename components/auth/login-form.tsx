@@ -11,17 +11,20 @@ import { Button } from "../ui/button";
 import { useState } from "react";
 import { FormError } from "./form-error";
 import { FormSuccess } from "./form-success";
-import axios from "axios";
+import api from "@/lib/axiosInstance";
+import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 
 export const LoginForm = () => {
     const [error, setError] = useState<string | undefined>("");
     const [success, setSuccess] = useState<string | undefined>("");
     const [isPending, setIsPending] = useState(false);
+    const router = useRouter();
 
     const form = useForm<z.infer<typeof LoginSchema>>({
         resolver: zodResolver(LoginSchema),
         defaultValues: {
-            username: "",
+            email: "",
             password: "",
         },
     });
@@ -31,18 +34,11 @@ export const LoginForm = () => {
         setSuccess("");
         setIsPending(true);
         try {
-            const res = await axios.post(
-                "https://health-blog-platform-alpha.vercel.app/api/token/",
-                data
-            );
-            if (res.status == 200) {
-                setSuccess("Login successful");
-                console.log(res.data);
-                localStorage.setItem("access_token", res.data.access);
-                localStorage.setItem("refresh_token", res.data.refresh);
-            } else {
-                setError("Invalid credentials");
-            }
+            await signIn("credentials", {
+                email: data.email,
+                password: data.password,
+                redirectTo: "/profile",
+            });
             setIsPending(false);
             form.reset();
         } catch (error) {
@@ -63,15 +59,16 @@ export const LoginForm = () => {
                     <div className="space-y-4">
                         <FormField
                             control={form.control}
-                            name="username"
+                            name="email"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Username</FormLabel>
+                                    <FormLabel>Email</FormLabel>
                                     <FormControl>
                                         <Input
                                             disabled={isPending}
                                             {...field}
-                                            placeholder="JhonDoe"
+                                            placeholder="jhon.doe@gmail.com"
+                                            type="email"
                                         />
                                     </FormControl>
                                     <FormMessage />
