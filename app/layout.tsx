@@ -7,9 +7,9 @@ import { SessionProvider } from "next-auth/react";
 const font = Open_Sans({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-    title: "Helix",
+    title: "Talker",
     description:
-        "Helix is a health blogging app where people from medical industry post health related articles.",
+        "Talker is a online platform where people can talk to the world and share their experiences.",
 };
 
 export default async function RootLayout({

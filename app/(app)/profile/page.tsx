@@ -1,6 +1,5 @@
-import { auth, signOut } from "@/auth";
-import { SignOutButton } from "@/components/sign-out";
-import { Button } from "@/components/ui/button";
+import { auth } from "@/auth";
+import { SignOutButton } from "@/components/auth/sign-out";
 
 const ProfilePage = async () => {
     const session = await auth();
