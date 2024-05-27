@@ -5,6 +5,7 @@ export type ExtendedUser = DefaultSession["user"] & {
     firstName: string;
     lastName: string;
     isMember: boolean;
+    userName: string;
     access_token: string;
 };
 
@@ -17,6 +18,8 @@ declare module "next-auth" {
         lastName: string;
         isMember: boolean;
         token: string;
+        userName: string;
+        emailVerified: string;
     }
 }
 
@@ -26,5 +29,6 @@ declare module "next-auth/jwt" {
         lastName: string;
         isMember: boolean;
         access_token: string;
+        userName: string;
     }
 }

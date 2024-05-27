@@ -8,19 +8,15 @@ import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { FormError } from "./form-error";
 import { FormSuccess } from "./form-success";
-import axios from "axios";
-import { useRouter } from "next/navigation";
-import api from "@/lib/axiosInstance";
+import { register } from "@/actions/register";
 
 export const RegisterForm = () => {
     const [error, setError] = useState<string | undefined>("");
     const [success, setSuccess] = useState<string | undefined>("");
-    const [isPending, setIsPending] = useState(false);
-
-    const router = useRouter();
+    const [isPending, startTransistion] = useTransition();
 
     const form = useForm<z.infer<typeof RegisterSchema>>({
         resolver: zodResolver(RegisterSchema),
@@ -35,23 +31,26 @@ export const RegisterForm = () => {
     const handleSubmit = async (data: z.infer<typeof RegisterSchema>) => {
         setError("");
         setSuccess("");
-        setIsPending(true);
-        try {
-            const res = await api.post("/auth/register", data);
-            if (res.status == 201) {
-                setSuccess("User registered successful");
-                router.push("/login");
-                console.log(res.data);
-            } else {
-                setError("Invalid credentials");
-            }
-            setIsPending(false);
-            form.reset();
-        } catch (error) {
-            setError("Invalid credentials");
-            setIsPending(false);
-            form.reset();
-        }
+
+        startTransistion(() => {
+            register(data)
+                .then((res) => {
+                    console.log(res);
+                    if (res?.error) {
+                        setError(res.error);
+                        form.reset();
+                    }
+                    if (res?.success) {
+                        setSuccess(res.success);
+                        form.reset();
+                    }
+                })
+                .catch((err) => {
+                    console.log(err);
+                    setError("Something went wrong");
+                    form.reset();
+                });
+        });
     };
 
     return (
@@ -124,8 +123,8 @@ export const RegisterForm = () => {
                             )}
                         />
                     </div>
-                    <FormError message="" />
-                    <FormSuccess message="" />
+                    <FormError message={error} />
+                    <FormSuccess message={success} />
                     <Button disabled={isPending} type="submit" className="w-full">
                         Regsiter
                     </Button>

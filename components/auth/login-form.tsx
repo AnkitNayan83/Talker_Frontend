@@ -11,9 +11,6 @@ import { Button } from "../ui/button";
 import { useState, useTransition } from "react";
 import { FormError } from "./form-error";
 import { FormSuccess } from "./form-success";
-import api from "@/lib/axiosInstance";
-import { useRouter } from "next/navigation";
-import { signIn } from "next-auth/react";
 import { login } from "@/actions/login";
 
 export const LoginForm = () => {

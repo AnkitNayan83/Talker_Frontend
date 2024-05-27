@@ -3,7 +3,7 @@
  * @type {string[]}
  */
 
-export const publicRoutes: string[] = ["/", "/article"];
+export const publicRoutes: string[] = ["/", "/article", "/verify-email"];
 
 /**
  * An array of routes that are used for authentication.

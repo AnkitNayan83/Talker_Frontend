@@ -1,6 +1,5 @@
 import NextAuth from "next-auth";
 import authConfig from "./auth.config";
-import { getUserById } from "./data/user";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
     pages: {
@@ -10,6 +9,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
     callbacks: {
         async signIn({ user }) {
+            const initialUser = !!user;
+
+            if (initialUser) {
+                if (!user?.emailVerified) {
+                    return false;
+                }
+            }
+
             return true;
         },
         async session({ session, token, user }) {
@@ -29,6 +36,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 session.user.isMember = token.isMember;
             }
 
+            if (token.userName && session.user) {
+                session.user.userName = token.userName;
+            }
+
             if (token.access_token && session.user) {
                 session.user.access_token = token.access_token;
             }
@@ -40,12 +51,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             const isInitialSignIn = !!user;
             if (isInitialSignIn) {
                 if (!token.sub) return token;
-
-                const currentUser = await getUserById(token.sub);
-
-                token.firstName = currentUser?.firstName;
-                token.lastName = currentUser?.lastName;
-                token.isMember = currentUser?.isMember;
+                token.firstName = user?.firstName;
+                token.lastName = user?.lastName;
+                token.isMember = user?.isMember;
+                token.userName = user?.userName;
                 token.access_token = user?.token;
             }
             return token;
