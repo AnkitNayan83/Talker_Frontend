@@ -8,18 +8,18 @@ import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { FormError } from "./form-error";
 import { FormSuccess } from "./form-success";
 import api from "@/lib/axiosInstance";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
+import { login } from "@/actions/login";
 
 export const LoginForm = () => {
     const [error, setError] = useState<string | undefined>("");
     const [success, setSuccess] = useState<string | undefined>("");
-    const [isPending, setIsPending] = useState(false);
-    const router = useRouter();
+    const [isPending, startTransistion] = useTransition();
 
     const form = useForm<z.infer<typeof LoginSchema>>({
         resolver: zodResolver(LoginSchema),
@@ -32,20 +32,23 @@ export const LoginForm = () => {
     const handleSubmit = async (data: z.infer<typeof LoginSchema>) => {
         setError("");
         setSuccess("");
-        setIsPending(true);
-        try {
-            await signIn("credentials", {
-                email: data.email,
-                password: data.password,
-                redirectTo: "/profile",
-            });
-            setIsPending(false);
-            form.reset();
-        } catch (error) {
-            setError("Invalid credentials");
-            setIsPending(false);
-            form.reset();
-        }
+
+        startTransistion(() => {
+            login(data)
+                .then((res) => {
+                    if (res?.error) {
+                        form.reset();
+                        setError(res.error);
+                    }
+                    if (res?.success) {
+                        form.reset();
+                        setSuccess(res.success);
+                    }
+                })
+                .catch(() => {
+                    setError("Something went wrong");
+                });
+        });
     };
 
     return (

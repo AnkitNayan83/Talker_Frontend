@@ -1,27 +1,36 @@
-import { NextRequest, NextResponse } from "next/server";
-import { authRoutes, publicRoutes } from "./routes";
-import { VerifyToken } from "./lib/verify-token";
+import authConfig from "./auth.config";
+import NextAuth from "next-auth";
+import { DEFAULT_LOGIN_REDIRECT, apiAuthPrefix, authRoutes, publicRoutes } from "./routes";
 
-export function middleware(req: NextRequest) {
-    // const { cookies } = req;
-    // const token = cookies.get("token")?.value;
-    // const isLoggedIn = VerifyToken(token);
-    // const isAuthRoutes = authRoutes.includes(req.nextUrl.pathname);
-    // const isPublicRoutes = publicRoutes.includes(req.nextUrl.pathname);
+const { auth } = NextAuth(authConfig);
 
-    // if (isAuthRoutes) {
-    //     if (isLoggedIn) {
-    //         return NextResponse.redirect("/");
-    //     }
-    //     return;
-    // }
+export default auth((req) => {
+    const { nextUrl } = req;
+    const isLoggedIn = !!req.auth;
 
-    // if (!isLoggedIn && !isPublicRoutes) {
-    //     return NextResponse.redirect("/login");
-    // }
+    const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
+
+    const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
+
+    const isAuthRoutes = authRoutes.includes(nextUrl.pathname);
+
+    if (isApiAuthRoute) {
+        return;
+    }
+
+    if (isAuthRoutes) {
+        if (isLoggedIn) {
+            return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
+        }
+        return;
+    }
+
+    if (!isLoggedIn && !isPublicRoute) {
+        return Response.redirect(new URL("/login", nextUrl));
+    }
 
     return;
-}
+});
 
 export const config = {
     matcher: ["/((?!.*\\..*|_next).*)", "/", "/(api|trpc)(.*)"],
