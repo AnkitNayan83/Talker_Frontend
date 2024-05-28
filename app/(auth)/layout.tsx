@@ -4,7 +4,9 @@ interface AuthLayoutProps {
 
 const AuthLayout = ({ children }: AuthLayoutProps) => {
     return (
-        <div className="flex items-center justify-center min-h-screen bg-sky-300">{children}</div>
+        <div className="flex items-center justify-center min-h-screen dark:bg-[#333] bg-gray-200">
+            {children}
+        </div>
     );
 };
 

@@ -6,7 +6,7 @@ import { LoginSchema } from "@/schemas";
 import { AuthError } from "next-auth";
 import * as z from "zod";
 
-export const login = async (data: z.infer<typeof LoginSchema>) => {
+export const login = async (data: z.infer<typeof LoginSchema>, callbackUrl: string | null) => {
     const validateFields = LoginSchema.safeParse(data);
     if (!validateFields.success) {
         return { error: "Invalid Field" };
@@ -16,7 +16,7 @@ export const login = async (data: z.infer<typeof LoginSchema>) => {
         await signIn("credentials", {
             email: data.email,
             password: data.password,
-            redirectTo: DEFAULT_LOGIN_REDIRECT,
+            redirectTo: callbackUrl || DEFAULT_LOGIN_REDIRECT,
         });
         return { success: "Logged in Successfully" };
     } catch (error) {

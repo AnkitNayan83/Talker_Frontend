@@ -6,7 +6,7 @@ interface AppLayoutProps {
 
 const AppLayout = ({ children }: AppLayoutProps) => {
     return (
-        <div>
+        <div className="min-h-screen">
             <Navbar />
             {children}
         </div>

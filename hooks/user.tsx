@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react";
  *
  * @return {User | undefined} The current user object if available, otherwise undefined.
  */
-export const UseCurrentUser = () => {
+export const useCurrentUser = () => {
     const session = useSession();
     return session.data?.user;
 };
