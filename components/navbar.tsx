@@ -1,13 +1,14 @@
-"use client";
-
 import Link from "next/link";
 import { ModeToggle } from "./dark-mode";
 import { SeacrhBar } from "./searchbar";
 import { UserButton } from "./auth/user-button";
 import { Button } from "./ui/button";
 import Image from "next/image";
+import { useCurrentUser } from "@/hooks/user";
+import { CurrentUser } from "@/lib/auth";
 
-export const Navbar = () => {
+export const Navbar = async () => {
+    const user = await CurrentUser();
     return (
         <div className="flex items-center justify-between p-4 border-b-2">
             <div className="flex-1">
@@ -32,7 +33,7 @@ export const Navbar = () => {
                         Post
                     </Link>
                 </Button>
-                <UserButton />
+                <UserButton user={user} />
             </div>
         </div>
     );
