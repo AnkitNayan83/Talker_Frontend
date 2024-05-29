@@ -1,6 +1,4 @@
 "use client";
-
-import { useCurrentUser } from "@/hooks/user";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -33,15 +31,15 @@ export const UserButton = ({ user }: UserButtonProps) => {
                         </Avatar>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-40" align="end">
+                        <DropdownMenuItem>
+                            <Link href={"/profile"}>Profile</Link>
+                        </DropdownMenuItem>
                         <LogoutButton>
                             <DropdownMenuItem className="flex items-center justify-between">
                                 <p>Sign Out</p>
                                 <LogOut className="mr-2 h-4 w-4" />
                             </DropdownMenuItem>
                         </LogoutButton>
-                        <DropdownMenuItem>
-                            <Link href={"/profile"}>Profile</Link>
-                        </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
             )}

@@ -1,7 +1,9 @@
+import { PostList } from "@/components/post/post-list";
+
 export default function Home() {
     return (
-        <div>
-            <h1 className="text-3xl font-bold underline">Hello World</h1>
+        <div className="flex flex-col justify-center items-center">
+            <PostList />
         </div>
     );
 }

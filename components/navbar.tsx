@@ -4,8 +4,8 @@ import { SeacrhBar } from "./searchbar";
 import { UserButton } from "./auth/user-button";
 import { Button } from "./ui/button";
 import Image from "next/image";
-import { useCurrentUser } from "@/hooks/user";
 import { CurrentUser } from "@/lib/auth";
+import { SideBar } from "./sidebar";
 
 export const Navbar = async () => {
     const user = await CurrentUser();
@@ -20,20 +20,21 @@ export const Navbar = async () => {
                         className="object-cover"
                         alt={"logo"}
                     />
-                    <h1 className="text-2xl font-semibold">Talker</h1>
+                    <h1 className="text-lg md:text-2xl font-semibold">Talker</h1>
                 </Link>
             </div>
-            <div className="flex-1">
+            <div className=" hidden md:flex flex-1 ">
                 <SeacrhBar />
             </div>
-            <div className="flex-1 flex items-center justify-end gap-10">
+            <div className="flex-1 flex items-center justify-end gap-12 md:gap-10">
                 <ModeToggle />
-                <Button asChild variant={"ghost"}>
+                <Button className="hidden md:flex" asChild variant={"ghost"}>
                     <Link href={"/post"} className="font-semibold text-lg">
                         Post
                     </Link>
                 </Button>
                 <UserButton user={user} />
+                <SideBar />
             </div>
         </div>
     );
