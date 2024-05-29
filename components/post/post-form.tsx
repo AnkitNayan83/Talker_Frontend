@@ -10,6 +10,7 @@ import { PostSchema } from "@/schemas";
 import * as z from "zod";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
+import { ImageUploadInput } from "./image-upload-input";
 
 export const PostForm = () => {
     const form = useForm<z.infer<typeof PostSchema>>({
@@ -49,20 +50,10 @@ export const PostForm = () => {
                         name="image"
                         render={({ field }) => (
                             <FormItem className="relative">
-                                <FormLabel
-                                    htmlFor="image"
-                                    className="flex items-center gap-2 cursor-pointer text-xl"
-                                >
-                                    <Image />
-                                    <p>Add an image</p>
-                                </FormLabel>
                                 <FormControl>
-                                    <Input
-                                        type="file"
-                                        {...field}
-                                        className="inset-0 opacity-0 absolute"
-                                        accept="image/*"
-                                        id="image"
+                                    <ImageUploadInput
+                                        onChange={field.onChange}
+                                        value={field.value || ""}
                                     />
                                 </FormControl>
                             </FormItem>
