@@ -1,18 +1,21 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "../ui/form";
 import { Textarea } from "../ui/textarea";
-import { Image } from "lucide-react";
 import { Button } from "../ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PostSchema } from "@/schemas";
 import * as z from "zod";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
 import { ImageUploadInput } from "./image-upload-input";
+import { useState, useTransition } from "react";
+import { post } from "@/actions/post";
+import { signOut } from "next-auth/react";
+import { toast } from "sonner";
 
 export const PostForm = () => {
+    const [isPending, startTransistion] = useTransition();
+
     const form = useForm<z.infer<typeof PostSchema>>({
         resolver: zodResolver(PostSchema),
         defaultValues: {
@@ -22,7 +25,32 @@ export const PostForm = () => {
     });
 
     const handelSubmit = (values: z.infer<typeof PostSchema>) => {
-        console.log(values);
+        startTransistion(() => {
+            post(values)
+                .then((res) => {
+                    console.log(res);
+                    if (res?.error) {
+                        form.reset();
+                        if (res.error === "unauthorized" || res.error === "TOKEN ERROR") {
+                            toast.error("Your session has expired please login again");
+                            signOut();
+                        } else {
+                            toast.error(res.error);
+                        }
+                    }
+                    if (res?.post) {
+                        const postId = res?.post.id;
+                        form.reset();
+                        toast.success(
+                            `Post created successfully.<a href="/post/${postId}">View Post</a>`
+                        );
+                    }
+                })
+                .catch((error) => {
+                    console.log(error);
+                    toast.error("Something went wrong");
+                });
+        });
     };
     return (
         <Form {...form}>
@@ -39,6 +67,7 @@ export const PostForm = () => {
                                         placeholder="Enter your thoughts"
                                         cols={10}
                                         rows={10}
+                                        disabled={isPending}
                                     />
                                 </FormControl>
                                 <FormMessage className="text-red-500" />
@@ -59,7 +88,7 @@ export const PostForm = () => {
                             </FormItem>
                         )}
                     />
-                    <Button className="mt-4 w-60" type="submit">
+                    <Button className="mt-4 w-60" type="submit" disabled={isPending}>
                         Post
                     </Button>
                 </div>
