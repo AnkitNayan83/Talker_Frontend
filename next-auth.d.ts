@@ -5,8 +5,11 @@ export type ExtendedUser = DefaultSession["user"] & {
     firstName: string;
     lastName: string;
     isMember: boolean;
-    userName: string;
     access_token: string;
+    userName: string;
+    emailVerified: Date | null;
+    hasNotification: boolean;
+    isMember: boolean;
 };
 
 declare module "next-auth" {
@@ -19,7 +22,9 @@ declare module "next-auth" {
         isMember: boolean;
         token: string;
         userName: string;
-        emailVerified: string;
+        emailVerified: Date | null;
+        hasNotification: boolean;
+        isMember: boolean;
     }
 }
 
@@ -30,5 +35,8 @@ declare module "next-auth/jwt" {
         isMember: boolean;
         access_token: string;
         userName: string;
+        emailVerified: Date | null;
+        hasNotification: boolean;
+        isMember: boolean;
     }
 }

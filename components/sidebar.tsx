@@ -10,7 +10,7 @@ export const SideBar = () => {
                 <MenuIcon className="h-6 w-6" />
             </SheetTrigger>
             <SheetContent>
-                <div className="mt-4 flex flex-col items-center gap-4">
+                <div className="mt-8 flex flex-col items-center gap-4">
                     <Button asChild className="w-full">
                         <Link href={"/post"} className="font-semibold text-lg">
                             Post

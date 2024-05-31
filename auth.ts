@@ -44,18 +44,29 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 session.user.access_token = token.access_token;
             }
 
+            if (token.emailVerified && session.user) {
+                session.user.emailVerified = token.emailVerified;
+            }
+
+            if (session.user) {
+                session.user.hasNotification = token.hasNotification;
+            }
+
             return session;
         },
 
         async jwt({ token, user }) {
             const isInitialSignIn = !!user;
             if (isInitialSignIn) {
+                console.log(user);
                 if (!token.sub) return token;
                 token.firstName = user?.firstName;
                 token.lastName = user?.lastName;
                 token.isMember = user?.isMember;
                 token.userName = user?.userName;
                 token.access_token = user?.token;
+                token.emailVerified = user?.emailVerified;
+                token.hasNotification = user?.hasNotification;
             }
             return token;
         },
