@@ -27,6 +27,7 @@ export const PostForm = () => {
     });
 
     const handelSubmit = (values: z.infer<typeof PostSchema>) => {
+        console.log(values);
         startTransistion(() => {
             post(values)
                 .then((res) => {
@@ -42,9 +43,9 @@ export const PostForm = () => {
                     }
                     if (res?.post) {
                         const postId = res?.post.id;
-                        form.reset();
                         router.push(`/post/${postId}`);
-                        toast.success(`Post created successfully`);
+                        form.reset();
+                        toast.success(`Talk created successfully`);
                     }
                 })
                 .catch((error) => {

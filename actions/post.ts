@@ -47,3 +47,12 @@ export const getPostById = async (id: string) => {
         return { error: error.response.data.message || "Post does not exist" };
     }
 };
+
+export const getFeedPosts = async () => {
+    try {
+        const { data } = await api.get("/post/feed");
+        return { posts: data.posts };
+    } catch (error: any) {
+        return { error: error.response.data.message || "Post does not exist" };
+    }
+};

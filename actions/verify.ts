@@ -9,7 +9,7 @@ export const verify = async (token: string) => {
         await api.post(`/auth/verify-email?token=${token}`);
         return { success: "Email verified successfully" };
     } catch (error: any) {
-        return { error: error.response.data.message || "Something went wrong" };
+        return { error: error?.response?.data?.message || "Something went wrong" };
     }
 };
 
