@@ -26,6 +26,24 @@ export const post = async (values: z.infer<typeof PostSchema>) => {
     } catch (error: any) {
         console.log(error);
 
-        return { error: error.response.data.message || "Something went wrong" };
+        return { error: error?.response?.data?.message || "Something went wrong" };
+    }
+};
+
+export const getPostById = async (id: string) => {
+    if (!id) return null;
+    const user = await CurrentUser();
+    if (!user) return { error: "Unauthorized" };
+
+    try {
+        const { data } = await api.get(`/post/${id}`, {
+            headers: {
+                Authorization: `Bearer ${user.access_token}`,
+            },
+        });
+
+        return { post: data.post };
+    } catch (error: any) {
+        return { error: error.response.data.message || "Post does not exist" };
     }
 };

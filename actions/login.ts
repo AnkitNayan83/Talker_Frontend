@@ -16,7 +16,7 @@ export const login = async (data: z.infer<typeof LoginSchema>, callbackUrl: stri
         await signIn("credentials", {
             email: data.email,
             password: data.password,
-            redirectTo: callbackUrl || DEFAULT_LOGIN_REDIRECT,
+            redirectTo: callbackUrl || "/",
         });
         return { success: "Logged in Successfully" };
     } catch (error) {

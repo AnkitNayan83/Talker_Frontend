@@ -12,9 +12,11 @@ import { useState, useTransition } from "react";
 import { post } from "@/actions/post";
 import { signOut } from "next-auth/react";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export const PostForm = () => {
     const [isPending, startTransistion] = useTransition();
+    const router = useRouter();
 
     const form = useForm<z.infer<typeof PostSchema>>({
         resolver: zodResolver(PostSchema),
@@ -41,9 +43,8 @@ export const PostForm = () => {
                     if (res?.post) {
                         const postId = res?.post.id;
                         form.reset();
-                        toast.success(
-                            `Post created successfully.<a href="/post/${postId}">View Post</a>`
-                        );
+                        router.push(`/post/${postId}`);
+                        toast.success(`Post created successfully`);
                     }
                 })
                 .catch((error) => {
