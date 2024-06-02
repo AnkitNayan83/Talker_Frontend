@@ -1,5 +1,4 @@
 import { Post } from "@/lib/types";
-import { ExtendedUser } from "@/next-auth";
 import { useCurrentUser } from "./user";
 
 interface PostLikeProps {

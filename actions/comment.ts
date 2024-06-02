@@ -42,3 +42,50 @@ export const getPostComments = async (postId: string) => {
         return { error: error?.response?.data?.message || "Something went wrong" };
     }
 };
+
+export const getComment = async (commentId: string) => {
+    try {
+        const { data } = await api.get(`/comment/${commentId}`);
+        return { comment: data.comment };
+    } catch (error: any) {
+        return { error: error?.response?.data?.message || "Something went wrong" };
+    }
+};
+
+export const like = async (commentId: string) => {
+    const user = await CurrentUser();
+    if (!user) return { error: "unauthorized" };
+    const token = user.access_token;
+    try {
+        const { data } = await api.post(
+            `/comment/like/${commentId}`,
+            {},
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
+        return { success: "liked" };
+    } catch (error: any) {
+        console.log(error);
+        return { error: error?.response?.data?.message || "Something went wrong" };
+    }
+};
+
+export const unlike = async (commentId: string) => {
+    const user = await CurrentUser();
+    if (!user) return { error: "unauthorized" };
+    const token = user.access_token;
+    try {
+        await api.delete(`/comment/unlike/${commentId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        return { success: "liked" };
+    } catch (error: any) {
+        console.log(error);
+        return { error: error?.response?.data?.message || "Something went wrong" };
+    }
+};

@@ -2,18 +2,18 @@
 
 import Image from "next/image";
 import { Card, CardContent, CardDescription, CardFooter, CardTitle } from "../ui/card";
-import { Heart, MessageCircle } from "lucide-react";
-import { Comment, Post } from "@/lib/types";
-import { CommentForm } from "../comments/comment-form";
-import Link from "next/link";
-import { useEffect, useState, useTransition } from "react";
+import { Delete, DeleteIcon, EllipsisVertical, Heart, MessageCircle, Trash } from "lucide-react";
+import { Comment } from "@/lib/types";
+import { useCallback, useEffect, useState, useTransition } from "react";
 import { useCurrentUser } from "@/hooks/user";
 import { HeartFilled } from "../heart-filled";
-import { usePostLike } from "@/hooks/post";
 import { toast } from "sonner";
-import { getPostById, like, unlike } from "@/actions/post";
 import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useCommentLike } from "@/hooks/comment";
+import { getComment, like, unlike } from "@/actions/comment";
+import { DropdownMenu, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
+import { DropdownMenuContent } from "@radix-ui/react-dropdown-menu";
 
 interface CommentCardProps {
     comment: Comment;
@@ -24,7 +24,7 @@ export const CommentCard = ({ comment }: CommentCardProps) => {
     const [showComments, setShowComments] = useState(false);
     const [isPending, startTransition] = useTransition();
     const [currComment, setCurrComment] = useState<Comment>(comment);
-    const [isLiked, setIsLiked] = useState(false);
+    const [isLiked, setIsLiked] = useState(useCommentLike({ comment: currComment }));
     const router = useRouter();
 
     const handleLike = (type: "like" | "unlike") => {
@@ -42,16 +42,16 @@ export const CommentCard = ({ comment }: CommentCardProps) => {
                                 toast.error("Your session has expired please login again");
                                 signOut();
                             } else toast.error(res.error);
-                            // setIsLiked(false);
+                            setIsLiked(false);
                         }
                         if (res.success) {
-                            // setIsLiked(true);
+                            setIsLiked(true);
                             toast.success("Post liked");
                         }
                     })
                     .catch(() => {
                         toast.error("Something went wrong");
-                        // setIsLiked(false);
+                        setIsLiked(false);
                     });
             });
         } else {
@@ -63,37 +63,33 @@ export const CommentCard = ({ comment }: CommentCardProps) => {
                                 toast.error("Your session has expired please login again");
                                 signOut();
                             } else toast.error(res.error);
-                            // setIsLiked(true);
+                            setIsLiked(true);
                         }
                         if (res.success) {
                             toast.success("Post unliked");
-                            // setIsLiked(false);
+                            setIsLiked(false);
                         }
                     })
                     .catch(() => {
                         toast.error("Something went wrong");
-                        // setIsLiked(true);
+                        setIsLiked(true);
                     });
             });
         }
     };
 
-    // useEffect(() => {
-    //     const updatePost = async () => {
-    //         const updatedPost = await getPostById(currPost.id);
-    //         if (updatedPost?.error) {
-    //             toast.error(updatedPost.error);
-    //         }
-    //         if (updatedPost?.post) {
-    //             setCurrPost(updatedPost.post);
-    //         }
-    //     };
-    //     updatePost();
-    // }, [isLiked]);
+    const getComments = useCallback(async () => {
+        const data = await getComment(currComment.id);
+        if (data?.comment) setCurrComment(data.comment);
+    }, [isLiked]);
+
+    useEffect(() => {
+        getComments();
+    }, [getComments]);
 
     return (
         <Card className="p-2 bg-gray-100 dark:bg-gray-800/90 md:w-full">
-            <CardTitle className="p-2">
+            <CardTitle className="p-2 flex items-center justify-between">
                 <div
                     onClick={() => router.push(`/user?username=${currComment.user.userName}`)}
                     className="flex items-center gap-2 hover:underline cursor-pointer"
@@ -106,6 +102,22 @@ export const CommentCard = ({ comment }: CommentCardProps) => {
                         className="object-cover rounded-full"
                     />
                     <p>{currComment.user.userName}</p>
+                </div>
+                <div>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger>
+                            <EllipsisVertical />
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent
+                            align="end"
+                            className="bg-gray-200 dark:bg-gray-700/80  w-[150px] rounded-md mt-1"
+                        >
+                            <DropdownMenuItem className="flex items-center justify-between cursor-pointer">
+                                <span>Delete</span>
+                                <Trash />
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                 </div>
             </CardTitle>
 
@@ -130,9 +142,12 @@ export const CommentCard = ({ comment }: CommentCardProps) => {
                         className="hover:text-blue-500 cursor-pointer ml-2"
                         onClick={() => setShowComments(!showComments)}
                     />
+                    <p>
+                        {currComment.commentReplies?.length > 0
+                            ? currComment.commentReplies.length
+                            : 0}
+                    </p>
                 </div>
-
-                {showComments && <CommentForm postId={currComment.id} />}
             </CardFooter>
         </Card>
     );
