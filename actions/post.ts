@@ -56,3 +56,40 @@ export const getFeedPosts = async () => {
         return { error: error.response.data.message || "Post does not exist" };
     }
 };
+
+export const like = async (postId: string) => {
+    const user = await CurrentUser();
+    if (!user) return { error: "unauthorized" };
+    const token = user.access_token;
+    try {
+        const { data } = await api.post(
+            `/post/${postId}`,
+            {},
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
+        return { success: "liked" };
+    } catch (error: any) {
+        return { error: error?.response?.data?.message || "Something went wrong" };
+    }
+};
+
+export const unlike = async (postId: string) => {
+    const user = await CurrentUser();
+    if (!user) return { error: "unauthorized" };
+    const token = user.access_token;
+    try {
+        const { data } = await api.delete(`/post/unlike/${postId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        return { success: "unliked" };
+    } catch (error: any) {
+        console.log(error);
+        return { error: error?.response?.data?.message || "Something went wrong" };
+    }
+};

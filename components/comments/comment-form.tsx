@@ -6,10 +6,12 @@ import { useTransition } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Form, FormControl, FormField, FormItem } from "../ui/form";
-import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 import { SendHorizonal } from "lucide-react";
 import { Input } from "../ui/input";
+import { comment } from "@/actions/comment";
+import { toast } from "sonner";
+import { signOut } from "next-auth/react";
 
 interface CommentFormProps {
     postId: string;
@@ -21,12 +23,33 @@ export const CommentForm = ({ postId }: CommentFormProps) => {
     const form = useForm<z.infer<typeof CommentSchema>>({
         resolver: zodResolver(CommentSchema),
         defaultValues: {
-            body: "",
+            data: "",
         },
     });
 
-    const handelSubmit = (values: z.infer<typeof CommentSchema>) => {
-        console.log(values);
+    const handelSubmit = async (values: z.infer<typeof CommentSchema>) => {
+        startTransition(() => {
+            comment(values, postId)
+                .then((res) => {
+                    if (res.error) {
+                        form.reset();
+                        if (res.error === "unauthorized" || res.error === "TOKEN ERROR") {
+                            toast.error("Your session has expired please login again");
+                            signOut();
+                        } else {
+                            toast.error(res.error);
+                        }
+                    }
+
+                    if (res.success) {
+                        form.reset();
+                        toast.success("Comment added successfully");
+                    }
+                })
+                .catch(() => {
+                    toast.error("Something went wrong");
+                });
+        });
     };
 
     return (
@@ -36,13 +59,13 @@ export const CommentForm = ({ postId }: CommentFormProps) => {
                     <div className="flex-bg-red-400 flex-[5]">
                         <FormField
                             control={form.control}
-                            name="body"
+                            name="data"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormControl>
                                         <Input
                                             {...field}
-                                            placeholder="Enter your thoughts"
+                                            placeholder="comment"
                                             disabled={isPending}
                                             className="w-full h-10 p-2"
                                         />
@@ -54,11 +77,10 @@ export const CommentForm = ({ postId }: CommentFormProps) => {
                     <Button
                         variant={"ghost"}
                         className="flex-[1] h-10 p-0"
-                        asChild
                         type="submit"
                         disabled={isPending}
                     >
-                        <SendHorizonal className="w-4 text-blue-500" />
+                        <SendHorizonal className="w-full text-blue-500 h-full" />
                     </Button>
                 </div>
             </form>

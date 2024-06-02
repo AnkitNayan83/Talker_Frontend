@@ -46,5 +46,5 @@ export const PostSchema = z
     );
 
 export const CommentSchema = z.object({
-    body: z.string().min(1, { message: "Cannot create an empty comment" }),
+    data: z.string().min(1, { message: "Cannot create an empty comment" }),
 });
