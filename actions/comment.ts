@@ -30,3 +30,15 @@ export const comment = async (values: z.infer<typeof CommentSchema>, postId: str
         return { error: error?.response?.data?.message || "Something went wrong" };
     }
 };
+
+export const getPostComments = async (postId: string) => {
+    if (!postId) return { error: "Post id is required" };
+
+    try {
+        const { data } = await api.get(`/comment/post/${postId}`);
+        console.log(data);
+        return { comments: data.comments };
+    } catch (error: any) {
+        return { error: error?.response?.data?.message || "Something went wrong" };
+    }
+};

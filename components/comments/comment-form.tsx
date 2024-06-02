@@ -15,9 +15,11 @@ import { signOut } from "next-auth/react";
 
 interface CommentFormProps {
     postId: string;
+    refetch: boolean;
+    setRefetch: (value: boolean) => void;
 }
 
-export const CommentForm = ({ postId }: CommentFormProps) => {
+export const CommentForm = ({ postId, setRefetch, refetch }: CommentFormProps) => {
     const [isPending, startTransition] = useTransition();
 
     const form = useForm<z.infer<typeof CommentSchema>>({
@@ -42,8 +44,10 @@ export const CommentForm = ({ postId }: CommentFormProps) => {
                     }
 
                     if (res.success) {
+                        setRefetch(true);
                         form.reset();
                         toast.success("Comment added successfully");
+                        setRefetch(!refetch);
                     }
                 })
                 .catch(() => {
@@ -54,7 +58,7 @@ export const CommentForm = ({ postId }: CommentFormProps) => {
 
     return (
         <Form {...form}>
-            <form className="w-full" onSubmit={form.handleSubmit(handelSubmit)}>
+            <form className="w-full mb-8" onSubmit={form.handleSubmit(handelSubmit)}>
                 <div className="flex items-center gap-4">
                     <div className="flex-bg-red-400 flex-[5]">
                         <FormField
