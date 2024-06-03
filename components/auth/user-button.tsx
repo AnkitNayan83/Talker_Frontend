@@ -23,12 +23,15 @@ export const UserButton = ({ user }: UserButtonProps) => {
             {user && (
                 <DropdownMenu>
                     <DropdownMenuTrigger>
-                        <Avatar>
-                            <AvatarImage src={user?.image || ""} alt="user" />
-                            <AvatarFallback className="bg-sky-500">
-                                <User2 className="text-white" />
-                            </AvatarFallback>
-                        </Avatar>
+                        <div className="flex items-center gap-2 text-lg hover:bg-accent p-2 rounded-md font-semibold">
+                            <span>{user.userName}</span>
+                            <Avatar>
+                                <AvatarImage src={user?.image || ""} alt="user" />
+                                <AvatarFallback className="bg-sky-500">
+                                    <User2 className="text-white" />
+                                </AvatarFallback>
+                            </Avatar>
+                        </div>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-40" align="end">
                         <DropdownMenuItem>
@@ -44,7 +47,7 @@ export const UserButton = ({ user }: UserButtonProps) => {
                 </DropdownMenu>
             )}
             {!user && (
-                <div className="flex items-center gap-4">
+                <div className="flex flex-col items-start gap-4">
                     <Button asChild variant={"outline"}>
                         <Link href={"/login"}>Sign In</Link>
                     </Button>

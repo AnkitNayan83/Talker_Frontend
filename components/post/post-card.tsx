@@ -27,6 +27,16 @@ export const PostCard = ({ post, loadComments }: PostCardProps) => {
     const [isLiked, setIsLiked] = useState(usePostLike({ post: currPost }));
     const router = useRouter();
 
+    const updatedPost = useCallback(async () => {
+        const updatedPost = await getPostById(currPost.id);
+        if (updatedPost?.error) {
+            toast.error(updatedPost.error);
+        }
+        if (updatedPost?.post) {
+            setCurrPost(updatedPost.post);
+        }
+    }, [currPost.id]);
+
     const handleLike = (type: "like" | "unlike") => {
         if (isPending) return;
         if (!user) {
@@ -45,6 +55,7 @@ export const PostCard = ({ post, loadComments }: PostCardProps) => {
                             setIsLiked(false);
                         }
                         if (res.success) {
+                            updatedPost();
                             setIsLiked(true);
                             toast.success("Post liked");
                         }
@@ -66,6 +77,7 @@ export const PostCard = ({ post, loadComments }: PostCardProps) => {
                             setIsLiked(true);
                         }
                         if (res.success) {
+                            updatedPost();
                             toast.success("Post unliked");
                             setIsLiked(false);
                         }
@@ -77,20 +89,6 @@ export const PostCard = ({ post, loadComments }: PostCardProps) => {
             });
         }
     };
-
-    const updatedPost = useCallback(async () => {
-        const updatedPost = await getPostById(currPost.id);
-        if (updatedPost?.error) {
-            toast.error(updatedPost.error);
-        }
-        if (updatedPost?.post) {
-            setCurrPost(updatedPost.post);
-        }
-    }, [isLiked]);
-
-    useEffect(() => {
-        updatedPost();
-    }, [updatedPost]);
 
     return (
         <Card className="p-2 md:w-[600px]">

@@ -7,34 +7,32 @@ import Image from "next/image";
 import { CurrentUser } from "@/lib/auth";
 import { SideBar } from "./sidebar";
 import { Notification } from "./notification";
+import { Separator } from "./ui/separator";
 
 export const Navbar = async () => {
     const user = await CurrentUser();
     return (
-        <div className="flex items-center justify-between p-4 border-b-2">
-            <div>
-                <Link href={"/"} className="flex items-center gap-2">
-                    <Image
-                        src={"/logo.png"}
-                        width={40}
-                        height={40}
-                        className="object-cover"
-                        alt={"logo"}
-                    />
-                    <h1 className="text-lg md:text-2xl font-semibold">Talker</h1>
-                </Link>
-            </div>
-            <div className="hidden md:flex w-[30%] ml-[10%]">
-                <SeacrhBar />
-            </div>
-            <div className=" flex items-center justify-end gap-12 md:gap-6">
+        <div className="flex flex-col items-center h-screen py-4 sticky top-0 w-[200px] border-r-2">
+            <Link href={"/"} className="flex items-center  gap-2">
+                <Image
+                    src={"/logo.png"}
+                    width={40}
+                    height={40}
+                    className="object-cover"
+                    alt={"logo"}
+                />
+                <h1 className="text-lg md:text-2xl font-semibold">Talker</h1>
+            </Link>
+            <Separator className="w-full" />
+            <div className="mt-12 flex flex-col items-start gap-12">
                 <Notification user={user} />
                 <ModeToggle />
-                <Button className="hidden md:flex" asChild variant={"ghost"}>
-                    <Link href={"/post"} className="font-semibold text-lg">
-                        Post
-                    </Link>
-                </Button>
+                <Link
+                    href={"/post"}
+                    className="font-semibold text-lg hover:bg-accent p-2 rounded-md w-full cursor-pointer "
+                >
+                    Create Talk
+                </Link>
                 <UserButton user={user} />
                 <div className="md:hidden">
                     <SideBar />
