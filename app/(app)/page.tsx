@@ -1,4 +1,4 @@
-import { getFeedPosts, post } from "@/actions/post";
+import { getFeedPosts } from "@/actions/post";
 import { PostList } from "@/components/post/post-list";
 
 export default async function Home() {

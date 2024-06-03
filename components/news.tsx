@@ -11,8 +11,8 @@ export const News = async () => {
     if (res?.news) {
         const news = res.news;
         return (
-            <div className="flex flex-col items-start w-full border-2 space-y-4 rounded-md">
-                <h1 className="text-2xl font-bold text-center w-full">Trending News</h1>
+            <div className="hidden md:flex flex-col items-start w-full border-2 space-y-4 rounded-md">
+                <h1 className="md:text-2xl font-bold text-center w-full">Trending News</h1>
                 <Separator />
                 {news?.map((item: any, i: any) => (
                     <div className="flex flex-col items-center py-2">

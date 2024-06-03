@@ -20,7 +20,7 @@ const SinglePostPage = async ({ params }: SinglePostPageProps) => {
     }
     if (data?.post) {
         return (
-            <div className="flex flex-col items-center">
+            <div className="flex flex-col items-center w-[1024px]">
                 <SinglePostCard loadComments post={data?.post} />
             </div>
         );

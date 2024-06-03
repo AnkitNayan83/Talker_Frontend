@@ -7,9 +7,9 @@ interface AppLayoutProps {
 
 const AppLayout = ({ children }: AppLayoutProps) => {
     return (
-        <div className="min-h-screen flex justify-between">
+        <div className="min-h-screen flex justify-between mt-4 md:mt-0">
             <Navbar />
-            <div className="flex-1 flex justify-center">
+            <div className="flex-1 flex flex-col-reverse md:flex md:flex-row justify-center">
                 {children}
                 <RightBar />
             </div>

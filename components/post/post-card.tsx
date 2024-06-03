@@ -13,6 +13,8 @@ import { getPostById, like, unlike } from "@/actions/post";
 import { signOut } from "next-auth/react";
 import { Comments } from "../comments/comment";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { Separator } from "../ui/separator";
 
 interface PostCardProps {
     post: Post;
@@ -91,11 +93,11 @@ export const PostCard = ({ post, loadComments }: PostCardProps) => {
     };
 
     return (
-        <Card className="p-2 md:w-[600px]">
+        <Card className="w-full md:w-[90%]">
             <CardTitle className="p-2 mb-2">
-                <div
+                <Link
                     className="flex items-center gap-2 hover:underline cursor-pointer"
-                    onClick={() => router.push(`/user?username=${currPost.user.userName}`)}
+                    href={`/user?username=${currPost.user.userName}`}
                 >
                     <Image
                         src={currPost.user?.profileImage || "/user.png"}
@@ -104,20 +106,24 @@ export const PostCard = ({ post, loadComments }: PostCardProps) => {
                         alt={"logo"}
                         className="object-cover rounded-full"
                     />
-                    <p>{currPost.user.userName}</p>
-                </div>
+                    <span>{currPost.user.userName}</span>
+                </Link>
             </CardTitle>
+            <Separator />
 
             <CardContent className="flex flex-col items-start gap-4">
-                <CardDescription className="font-[600] text-[18px] my-6">
-                    {currPost.body}
-                </CardDescription>
-                {currPost.image && (
-                    <div className="relative w-full h-[300px]">
-                        <Image src={currPost.image} fill alt={"logo"} />
-                    </div>
-                )}
+                <Link className="w-full" href={`/post/${currPost.id}`}>
+                    <CardDescription className="font-[600] text-[18px] my-6">
+                        {currPost.body}
+                    </CardDescription>
+                    {currPost.image && (
+                        <div className=" relative w-full h-[300px]">
+                            <Image src={currPost.image} fill alt={"logo"} />
+                        </div>
+                    )}
+                </Link>
             </CardContent>
+            <Separator className="mb-2" />
             <CardFooter className="flex flex-col items-start gap-4 justify-center w-full animate-out">
                 <div className="flex items-center gap-4">
                     {isLiked ? (

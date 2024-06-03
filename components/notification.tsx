@@ -9,7 +9,7 @@ interface NotificationProps {
 export const Notification = ({ user }: NotificationProps) => {
     if (!user) return null;
     return (
-        <div className="flex items-center justify-between w-full cursor-pointer text-lg font-semibold hover:bg-accent p-2 rounded-md">
+        <div className="flex items-center w-full cursor-pointer text-lg font-semibold hover:bg-accent p-2 rounded-md">
             <h1>Notification</h1>
             <div className="relative hover:bg-gray-100 dark:hover:bg-gray-100/10 hover:rounded-full p-2 cursor-pointer">
                 <Button
