@@ -31,7 +31,7 @@ export default async function RootLayout({
                         enableSystem
                         disableTransitionOnChange
                     >
-                        <Toaster />
+                        <Toaster className="dark:bg-[#222]" />
                         {children}
                     </ThemeProvider>
                 </body>

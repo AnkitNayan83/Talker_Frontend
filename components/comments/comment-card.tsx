@@ -11,21 +11,28 @@ import { toast } from "sonner";
 import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useCommentLike } from "@/hooks/comment";
-import { getComment, like, unlike } from "@/actions/comment";
+import { deleteComment, getComment, like, unlike } from "@/actions/comment";
 import { DropdownMenu, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { DropdownMenuContent } from "@radix-ui/react-dropdown-menu";
 
 interface CommentCardProps {
     comment: Comment;
+    refetch: boolean;
+    setRefetch: (value: boolean) => void;
 }
 
-export const CommentCard = ({ comment }: CommentCardProps) => {
+export const CommentCard = ({ comment, refetch, setRefetch }: CommentCardProps) => {
     const user = useCurrentUser();
     const [showComments, setShowComments] = useState(false);
     const [isPending, startTransition] = useTransition();
     const [currComment, setCurrComment] = useState<Comment>(comment);
-    const [isLiked, setIsLiked] = useState(useCommentLike({ comment: currComment }));
+    const [isLiked, setIsLiked] = useState(useCommentLike({ comment }));
     const router = useRouter();
+
+    const getComments = useCallback(async () => {
+        const data = await getComment(currComment.id);
+        if (data?.comment) setCurrComment(data.comment);
+    }, [currComment.id]);
 
     const handleLike = (type: "like" | "unlike") => {
         if (isPending) return;
@@ -33,59 +40,51 @@ export const CommentCard = ({ comment }: CommentCardProps) => {
             toast.error("Please login to like a post");
             return;
         }
-        if (type === "like") {
-            startTransition(() => {
-                like(currComment.id)
-                    .then((res) => {
-                        if (res?.error) {
-                            if (res.error === "unauthorized" || res.error === "TOKEN ERROR") {
-                                toast.error("Your session has expired please login again");
-                                signOut();
-                            } else toast.error(res.error);
-                            setIsLiked(false);
-                        }
-                        if (res.success) {
-                            setIsLiked(true);
-                            toast.success("Post liked");
-                        }
-                    })
-                    .catch(() => {
-                        toast.error("Something went wrong");
-                        setIsLiked(false);
-                    });
-            });
-        } else {
-            startTransition(() => {
-                unlike(currComment.id)
-                    .then((res) => {
-                        if (res?.error) {
-                            if (res.error === "unauthorized" || res.error === "TOKEN ERROR") {
-                                toast.error("Your session has expired please login again");
-                                signOut();
-                            } else toast.error(res.error);
-                            setIsLiked(true);
-                        }
-                        if (res.success) {
-                            toast.success("Post unliked");
-                            setIsLiked(false);
-                        }
-                    })
-                    .catch(() => {
-                        toast.error("Something went wrong");
-                        setIsLiked(true);
-                    });
-            });
-        }
+        const action = type === "like" ? like : unlike;
+        startTransition(() => {
+            action(currComment.id)
+                .then((res) => {
+                    if (res?.error) {
+                        if (res.error === "unauthorized" || res.error === "TOKEN ERROR") {
+                            toast.error("Your session has expired please login again");
+                            signOut();
+                        } else toast.error(res.error);
+                        setIsLiked(type !== "like");
+                    }
+                    if (res.success) {
+                        setIsLiked(type === "like");
+                        toast.success(`Post ${type === "like" ? "liked" : "unliked"}`);
+                        getComments();
+                    }
+                })
+                .catch(() => {
+                    toast.error("Something went wrong");
+                    setIsLiked(type !== "like");
+                });
+        });
     };
 
-    const getComments = useCallback(async () => {
-        const data = await getComment(currComment.id);
-        if (data?.comment) setCurrComment(data.comment);
-    }, [isLiked]);
-
-    useEffect(() => {
-        getComments();
-    }, [getComments]);
+    const handleDelete = () => {
+        if (isPending) return;
+        startTransition(() => {
+            deleteComment(currComment.id)
+                .then((res) => {
+                    if (res?.error) {
+                        if (res.error === "unauthorized" || res.error === "TOKEN ERROR") {
+                            toast.error("Your session has expired please login again");
+                            signOut();
+                        } else toast.error(res.error);
+                    }
+                    if (res.success) {
+                        toast.success("Post deleted");
+                        setRefetch(!refetch);
+                    }
+                })
+                .catch(() => {
+                    toast.error("Something went wrong");
+                });
+        });
+    };
 
     return (
         <Card className="p-2 bg-gray-100 dark:bg-gray-800/90 md:w-full">
@@ -104,26 +103,32 @@ export const CommentCard = ({ comment }: CommentCardProps) => {
                     <p>{currComment.user.userName}</p>
                 </div>
                 <div>
-                    <DropdownMenu>
-                        <DropdownMenuTrigger>
-                            <EllipsisVertical />
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent
-                            align="end"
-                            className="bg-gray-200 dark:bg-gray-700/80  w-[150px] rounded-md mt-1"
-                        >
-                            <DropdownMenuItem className="flex items-center justify-between cursor-pointer">
-                                <span>Delete</span>
-                                <Trash />
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                    {user?.id === currComment.userId && (
+                        <DropdownMenu>
+                            <DropdownMenuTrigger>
+                                <EllipsisVertical />
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent
+                                align="end"
+                                className="bg-gray-200 dark:bg-gray-700/80  w-[150px] rounded-md mt-1"
+                            >
+                                <DropdownMenuItem
+                                    disabled={isPending}
+                                    className="flex items-center justify-between cursor-pointer"
+                                    onClick={() => handleDelete()}
+                                >
+                                    <span>Delete</span>
+                                    <Trash />
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    )}
                 </div>
             </CardTitle>
 
             <CardContent className="flex flex-col items-start">
                 <CardDescription className="font-[600] text-[18px] my-2">
-                    <p>{currComment.body}</p>
+                    {currComment.body}
                 </CardDescription>
             </CardContent>
 

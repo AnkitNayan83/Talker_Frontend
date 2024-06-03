@@ -17,20 +17,23 @@ export const Comments = ({ comments, postId }: CommentsProps) => {
 
     const getComments = useCallback(async () => {
         const res = await getPostComments(postId);
-        console.log(res);
         if (res?.comments) setCurrComments(res.comments);
     }, [refetch]);
 
     useEffect(() => {
         getComments();
-        console.log("hi");
     }, [getComments]);
 
     return (
         <div className="flex flex-col gap-4 w-full">
             <CommentForm postId={postId} setRefetch={setRefetch} refetch={refetch} />
             {currComments?.map((comment) => (
-                <CommentCard key={comment.id} comment={comment} />
+                <CommentCard
+                    key={comment.id}
+                    comment={comment}
+                    setRefetch={setRefetch}
+                    refetch={refetch}
+                />
             ))}
         </div>
     );

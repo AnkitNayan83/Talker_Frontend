@@ -4,7 +4,7 @@ import Image from "next/image";
 import { Card, CardContent, CardDescription, CardFooter, CardTitle } from "../ui/card";
 import { Heart, MessageCircle } from "lucide-react";
 import { Post } from "@/lib/types";
-import { useEffect, useState, useTransition } from "react";
+import { useCallback, useEffect, useState, useTransition } from "react";
 import { useCurrentUser } from "@/hooks/user";
 import { HeartFilled } from "../heart-filled";
 import { usePostLike } from "@/hooks/post";
@@ -19,9 +19,9 @@ interface PostCardProps {
     loadComments: boolean;
 }
 
-export const PostCard = ({ post }: PostCardProps) => {
+export const PostCard = ({ post, loadComments }: PostCardProps) => {
     const user = useCurrentUser();
-    const [showComments, setShowComments] = useState(false);
+    const [showComments, setShowComments] = useState(loadComments);
     const [isPending, startTransition] = useTransition();
     const [currPost, setCurrPost] = useState<Post>(post);
     const [isLiked, setIsLiked] = useState(usePostLike({ post: currPost }));
@@ -78,18 +78,19 @@ export const PostCard = ({ post }: PostCardProps) => {
         }
     };
 
-    useEffect(() => {
-        const updatePost = async () => {
-            const updatedPost = await getPostById(currPost.id);
-            if (updatedPost?.error) {
-                toast.error(updatedPost.error);
-            }
-            if (updatedPost?.post) {
-                setCurrPost(updatedPost.post);
-            }
-        };
-        updatePost();
+    const updatedPost = useCallback(async () => {
+        const updatedPost = await getPostById(currPost.id);
+        if (updatedPost?.error) {
+            toast.error(updatedPost.error);
+        }
+        if (updatedPost?.post) {
+            setCurrPost(updatedPost.post);
+        }
     }, [isLiked]);
+
+    useEffect(() => {
+        updatedPost();
+    }, [updatedPost]);
 
     return (
         <Card className="p-2 md:w-[600px]">

@@ -89,3 +89,19 @@ export const unlike = async (commentId: string) => {
         return { error: error?.response?.data?.message || "Something went wrong" };
     }
 };
+
+export const deleteComment = async (commentId: string) => {
+    const user = await CurrentUser();
+    if (!user) return { error: "unauthorized" };
+    const token = user.access_token;
+    try {
+        await api.delete(`/comment/${commentId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        return { success: "Comment deleted" };
+    } catch (error: any) {
+        return { error: error?.response?.data?.message || "Something went wrong" };
+    }
+};

@@ -8,5 +8,8 @@ interface CommentLikeProps {
 export const useCommentLike = ({ comment }: CommentLikeProps) => {
     const user = useCurrentUser();
     if (!user) return false;
-    return comment.likes?.some((like) => like.userId === user.id);
+    const likes = comment.likes;
+    if (!likes) return false;
+    const bl = likes.some((like) => like.user.id === user.id);
+    return bl;
 };

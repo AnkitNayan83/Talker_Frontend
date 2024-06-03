@@ -1,6 +1,5 @@
 import { getPostById } from "@/actions/post";
 import { SinglePostCard } from "@/components/post/single-post-card";
-import { Post } from "@/lib/types";
 
 interface SinglePostPageProps {
     params: {
@@ -22,7 +21,7 @@ const SinglePostPage = async ({ params }: SinglePostPageProps) => {
     if (data?.post) {
         return (
             <div className="flex flex-col items-center">
-                <SinglePostCard post={data?.post} />
+                <SinglePostCard loadComments post={data?.post} />
             </div>
         );
     }
