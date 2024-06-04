@@ -14,6 +14,7 @@ import { useCommentLike } from "@/hooks/comment";
 import { deleteComment, getComment, like, unlike } from "@/actions/comment";
 import { DropdownMenu, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { DropdownMenuContent } from "@radix-ui/react-dropdown-menu";
+import Link from "next/link";
 
 interface CommentCardProps {
     comment: Comment;
@@ -23,11 +24,9 @@ interface CommentCardProps {
 
 export const CommentCard = ({ comment, refetch, setRefetch }: CommentCardProps) => {
     const user = useCurrentUser();
-    const [showComments, setShowComments] = useState(false);
     const [isPending, startTransition] = useTransition();
     const [currComment, setCurrComment] = useState<Comment>(comment);
     const [isLiked, setIsLiked] = useState(useCommentLike({ comment }));
-    const router = useRouter();
 
     const getComments = useCallback(async () => {
         const data = await getComment(currComment.id);
@@ -89,8 +88,8 @@ export const CommentCard = ({ comment, refetch, setRefetch }: CommentCardProps) 
     return (
         <Card className="p-2 bg-gray-100 dark:bg-gray-800/90 md:w-full">
             <CardTitle className="p-2 flex items-center justify-between">
-                <div
-                    onClick={() => router.push(`/user?username=${currComment.user.userName}`)}
+                <Link
+                    href={`/user?username=${currComment.user.userName}`}
                     className="flex items-center gap-2 hover:underline cursor-pointer"
                 >
                     <Image
@@ -100,8 +99,8 @@ export const CommentCard = ({ comment, refetch, setRefetch }: CommentCardProps) 
                         alt={"logo"}
                         className="object-cover rounded-full"
                     />
-                    <p>{currComment.user.userName}</p>
-                </div>
+                    <span>{currComment.user.userName}</span>
+                </Link>
                 <div>
                     {user?.id === currComment.userId && (
                         <DropdownMenu>
@@ -125,12 +124,13 @@ export const CommentCard = ({ comment, refetch, setRefetch }: CommentCardProps) 
                     )}
                 </div>
             </CardTitle>
-
-            <CardContent className="flex flex-col items-start">
-                <CardDescription className="font-[600] text-[18px] my-2">
-                    {currComment.body}
-                </CardDescription>
-            </CardContent>
+            <Link href={`/comment/${currComment.id}`}>
+                <CardContent className="flex flex-col items-start">
+                    <CardDescription className="font-[600] text-[18px] my-2">
+                        {currComment.body}
+                    </CardDescription>
+                </CardContent>
+            </Link>
 
             <CardFooter className="flex flex-col items-start gap-4 justify-center w-full animate-out">
                 <div className="flex items-center gap-2">
@@ -143,10 +143,9 @@ export const CommentCard = ({ comment, refetch, setRefetch }: CommentCardProps) 
                         />
                     )}
                     <p>{currComment.likes?.length > 0 ? currComment.likes.length : 0}</p>
-                    <MessageCircle
-                        className="hover:text-blue-500 cursor-pointer ml-2"
-                        onClick={() => setShowComments(!showComments)}
-                    />
+                    <Link href={`/comment/${currComment.id}`}>
+                        <MessageCircle className="hover:text-blue-500 cursor-pointer ml-2" />
+                    </Link>
                     <p>
                         {currComment.commentReplies?.length > 0
                             ? currComment.commentReplies.length

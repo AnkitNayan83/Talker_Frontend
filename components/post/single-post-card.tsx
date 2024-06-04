@@ -19,7 +19,7 @@ export const SinglePostCard = ({ post, loadComments }: SinglePostCardProps) => {
     }
 
     return (
-        <div className="w-full min-h-screen flex flex-col items-center p-2 ">
+        <div className="w-full md:w-[760px] min-h-screen flex flex-col items-center p-2">
             <div className="flex items-center justify-start w-full gap-4 text-2xl font-bold mb-8">
                 <Link href={"/"}>
                     <MoveLeft />

@@ -149,7 +149,7 @@ export const PostCard = ({ post, loadComments }: PostCardProps) => {
                     {currPost.likes.length > 1 && (
                         <div>
                             Liked by <strong>{currPost.likes[0].user.userName}</strong> and{" "}
-                            {currPost.likes.length} others
+                            {currPost.likes.length - 1} others
                         </div>
                     )}
                 </div>

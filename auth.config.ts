@@ -14,7 +14,8 @@ export default {
                     try {
                         const res = await api.post("/auth/login", { email, password });
                         return res.data.user;
-                    } catch (error) {
+                    } catch (error: any) {
+                        console.log(error?.response?.data?.message);
                         return null;
                     }
                 }
