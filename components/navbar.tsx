@@ -11,7 +11,7 @@ export const Navbar = async () => {
     const user = await CurrentUser();
     return (
         <>
-            <div className="hidden md:flex flex-col items-center h-screen py-4 sticky top-0 w-[200px] border-r-2">
+            <div className="hidden w-[200px] md:flex flex-col items-center h-screen py-4 sticky top-0 border-r-2">
                 <Link href={"/"} className="flex items-center  gap-2">
                     <Image
                         src={"/logo.png"}

@@ -105,3 +105,19 @@ export const deleteComment = async (commentId: string) => {
         return { error: error?.response?.data?.message || "Something went wrong" };
     }
 };
+
+export const reply = async (values: z.infer<typeof CommentSchema>, commentId: string) => {
+    const user = await CurrentUser();
+    if (!user) return { error: "unauthorized" };
+    const token = user.access_token;
+    try {
+        const { data } = await api.post(`/comment/reply/${commentId}`, values, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        return { success: data?.message || "Comment added" };
+    } catch (error: any) {
+        return { error: error?.response?.data?.message || "Something went wrong" };
+    }
+};

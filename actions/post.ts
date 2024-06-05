@@ -93,3 +93,20 @@ export const unlike = async (postId: string) => {
         return { error: error?.response?.data?.message || "Something went wrong" };
     }
 };
+
+export const deletePost = async (postId: string) => {
+    const user = await CurrentUser();
+    if (!user) return { error: "unauthorized" };
+    const token = user.access_token;
+    try {
+        await api.delete(`/post/${postId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        return { success: "deleted" };
+    } catch (error: any) {
+        console.log(error);
+        return { error: error?.response?.data?.message || "Something went wrong" };
+    }
+};

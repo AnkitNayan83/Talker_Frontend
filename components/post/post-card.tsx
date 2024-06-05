@@ -2,19 +2,25 @@
 
 import Image from "next/image";
 import { Card, CardContent, CardDescription, CardFooter, CardTitle } from "../ui/card";
-import { Heart, MessageCircle } from "lucide-react";
+import { EllipsisVertical, Heart, MessageCircle, Trash } from "lucide-react";
 import { Post } from "@/lib/types";
 import { useCallback, useEffect, useState, useTransition } from "react";
 import { useCurrentUser } from "@/hooks/user";
 import { HeartFilled } from "../heart-filled";
 import { usePostLike } from "@/hooks/post";
 import { toast } from "sonner";
-import { getPostById, like, unlike } from "@/actions/post";
+import { deletePost, getPostById, like, unlike } from "@/actions/post";
 import { signOut } from "next-auth/react";
 import { Comments } from "../comments/comment";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Separator } from "../ui/separator";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
 
 interface PostCardProps {
     post: Post;
@@ -92,9 +98,30 @@ export const PostCard = ({ post, loadComments }: PostCardProps) => {
         }
     };
 
+    const handleDelete = async () => {
+        try {
+            startTransition(() => {
+                deletePost(currPost.id).then((res) => {
+                    if (res?.error) {
+                        if (res.error === "unauthorized" || res.error === "TOKEN ERROR") {
+                            toast.error("Your session has expired please login again");
+                            signOut();
+                        } else {
+                            toast.error(res.error);
+                        }
+                    } else {
+                        toast.success("Post deleted");
+                        location.reload();
+                        router.push("/");
+                    }
+                });
+            });
+        } catch (error) {}
+    };
+
     return (
         <Card className="w-full md:w-[90%]">
-            <CardTitle className="p-2 mb-2">
+            <CardTitle className="p-2 mb-2 flex items-center justify-between">
                 <Link
                     className="flex items-center gap-2 hover:underline cursor-pointer"
                     href={`/user?username=${currPost.user.userName}`}
@@ -108,6 +135,28 @@ export const PostCard = ({ post, loadComments }: PostCardProps) => {
                     />
                     <span>{currPost.user.userName}</span>
                 </Link>
+                <div>
+                    {user?.id === post.userId && (
+                        <DropdownMenu>
+                            <DropdownMenuTrigger>
+                                <EllipsisVertical />
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent
+                                align="end"
+                                className="bg-gray-200 dark:bg-gray-700/80  w-[150px] rounded-md mt-1"
+                            >
+                                <DropdownMenuItem
+                                    disabled={isPending}
+                                    className="flex items-center justify-between cursor-pointer"
+                                    onClick={() => handleDelete()}
+                                >
+                                    <span>Delete</span>
+                                    <Trash />
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    )}
+                </div>
             </CardTitle>
             <Separator />
 
@@ -124,7 +173,7 @@ export const PostCard = ({ post, loadComments }: PostCardProps) => {
                 </Link>
             </CardContent>
             <Separator className="mb-2" />
-            <CardFooter className="flex flex-col items-start gap-4 justify-center w-full animate-out">
+            <CardFooter className="flex flex-col items-start gap-4 justify-center w-full animate-out pt-2">
                 <div className="flex items-center gap-4">
                     {isLiked ? (
                         <HeartFilled handleLike={handleLike} />

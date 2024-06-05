@@ -15,22 +15,22 @@ import { deleteComment, getComment, like, unlike } from "@/actions/comment";
 import { DropdownMenu, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { DropdownMenuContent } from "@radix-ui/react-dropdown-menu";
 import Link from "next/link";
+import { Replies } from "./replies";
 
 interface CommentCardProps {
     comment: Comment;
-    refetch: boolean;
-    setRefetch: (value: boolean) => void;
 }
 
-export const CommentCard = ({ comment, refetch, setRefetch }: CommentCardProps) => {
+export const SingleCommentCard = ({ comment }: CommentCardProps) => {
     const user = useCurrentUser();
     const [isPending, startTransition] = useTransition();
     const [currComment, setCurrComment] = useState<Comment>(comment);
     const [isLiked, setIsLiked] = useState(useCommentLike({ comment }));
+    const [showComments, setShowComments] = useState(true);
+    const router = useRouter();
 
     const getComments = useCallback(async () => {
         const data = await getComment(currComment.id);
-        console.log(data?.comment);
         if (data?.comment) setCurrComment(data.comment);
     }, [currComment.id]);
 
@@ -75,9 +75,9 @@ export const CommentCard = ({ comment, refetch, setRefetch }: CommentCardProps) 
                             signOut();
                         } else toast.error(res.error);
                     }
-                    if (res.success) {
-                        toast.success("Post deleted");
-                        setRefetch(!refetch);
+                    if (res?.success) {
+                        router.push("/");
+                        toast.success("Deleted");
                     }
                 })
                 .catch(() => {
@@ -87,21 +87,38 @@ export const CommentCard = ({ comment, refetch, setRefetch }: CommentCardProps) 
     };
 
     return (
-        <Card className="p-2 bg-gray-100 dark:bg-gray-800/90 md:w-full">
+        <Card className="p-2 md:w-[760px]">
             <CardTitle className="p-2 flex items-center justify-between">
-                <Link
-                    href={`/user?username=${currComment.user.userName}`}
-                    className="flex items-center gap-2 hover:underline cursor-pointer"
-                >
-                    <Image
-                        src={currComment.user?.profileImage || "/user.png"}
-                        width={40}
-                        height={40}
-                        alt={"logo"}
-                        className="object-cover rounded-full"
-                    />
-                    <span>{currComment.user.userName}</span>
-                </Link>
+                <div className="flex flex-col gap-2 items-center">
+                    <Link
+                        href={`/user?username=${currComment.user.userName}`}
+                        className="flex items-center gap-2 hover:underline cursor-pointer"
+                    >
+                        <Image
+                            src={currComment.user?.profileImage || "/user.png"}
+                            width={40}
+                            height={40}
+                            alt={"logo"}
+                            className="object-cover rounded-full"
+                        />
+                        <span>{currComment.user.userName}</span>
+                    </Link>
+                    <Link
+                        href={
+                            currComment.postId
+                                ? `/post/${currComment.postId}`
+                                : `/comment/${currComment.parentCommentId}`
+                        }
+                        className="text-sm"
+                    >
+                        Replied to{" "}
+                        <span className="text-sky-500 hover:text-sky-600 hover:underline">
+                            {currComment.postId
+                                ? `post ${currComment.post?.user?.userName}`
+                                : `comment ${currComment.parentComment?.user?.userName}`}
+                        </span>
+                    </Link>
+                </div>
                 <div>
                     {user?.id === currComment.userId && (
                         <DropdownMenu>
@@ -145,7 +162,10 @@ export const CommentCard = ({ comment, refetch, setRefetch }: CommentCardProps) 
                     )}
                     <p>{currComment.likes?.length > 0 ? currComment.likes.length : 0}</p>
                     <Link href={`/comment/${currComment.id}`}>
-                        <MessageCircle className="hover:text-blue-500 cursor-pointer ml-2" />
+                        <MessageCircle
+                            className="hover:text-blue-500 cursor-pointer ml-2"
+                            onClick={() => setShowComments(!showComments)}
+                        />
                     </Link>
                     <p>
                         {currComment.commentReplies?.length > 0
@@ -153,6 +173,9 @@ export const CommentCard = ({ comment, refetch, setRefetch }: CommentCardProps) 
                             : 0}
                     </p>
                 </div>
+                {showComments && (
+                    <Replies replies={currComment.commentReplies} commentId={currComment.id} />
+                )}
             </CardFooter>
         </Card>
     );
