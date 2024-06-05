@@ -18,7 +18,7 @@ export const Replies = ({ replies, commentId }: RepliesProps) => {
     const getReplies = useCallback(async () => {
         const res = await getComment(commentId);
         if (res?.comment) setCurrReplies(res.comment.commentReplies);
-    }, [refetch]);
+    }, [refetch, commentId]);
 
     useEffect(() => {
         getReplies();

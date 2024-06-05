@@ -18,7 +18,7 @@ export const Comments = ({ comments, postId }: CommentsProps) => {
     const getComments = useCallback(async () => {
         const res = await getPostComments(postId);
         if (res?.comments) setCurrComments(res.comments);
-    }, [refetch]);
+    }, [refetch, postId]);
 
     useEffect(() => {
         getComments();

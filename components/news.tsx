@@ -14,13 +14,12 @@ export const News = async () => {
             <div className="hidden md:flex flex-col items-start w-full border-2 space-y-4 rounded-md">
                 <h1 className="md:text-2xl font-bold text-center w-full">Trending News</h1>
                 <Separator />
-                {news?.map((item: any, i: any) => (
-                    <div className="flex flex-col items-center py-2">
+                {news?.map((item: any) => (
+                    <div className="flex flex-col items-center py-2" key={item.article_id}>
                         <Link
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-sm px-2"
-                            key={i}
                             href={item.link}
                         >
                             {item.title}
