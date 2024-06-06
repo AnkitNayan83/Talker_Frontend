@@ -5,8 +5,6 @@ import { Comment } from "@/lib/types";
 import { useCallback, useEffect, useState } from "react";
 import { ReplyForm } from "./reply-form";
 import { CommentCard } from "./comment-card";
-import { isLikedByUser, isLikedByUserClient } from "@/lib/comment";
-import { useCurrentUser } from "@/hooks/user";
 
 interface RepliesProps {
     replies: Comment[];
@@ -14,7 +12,6 @@ interface RepliesProps {
 }
 
 export const Replies = ({ replies, commentId }: RepliesProps) => {
-    const user = useCurrentUser();
     const [refetch, setRefetch] = useState(false);
     const [currReplies, setCurrReplies] = useState<Comment[]>(replies);
 
@@ -32,10 +29,8 @@ export const Replies = ({ replies, commentId }: RepliesProps) => {
             <ReplyForm commentId={commentId} setRefetch={setRefetch} refetch={refetch} />
             {Array.isArray(currReplies) &&
                 currReplies.map((reply) => {
-                    const isLiked = isLikedByUserClient(reply, user?.id);
                     return (
                         <CommentCard
-                            isLikedByUser={isLiked}
                             key={reply.id}
                             comment={reply}
                             setRefetch={setRefetch}
