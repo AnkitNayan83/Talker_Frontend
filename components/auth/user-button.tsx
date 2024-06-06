@@ -47,11 +47,11 @@ export const UserButton = ({ user }: UserButtonProps) => {
                 </DropdownMenu>
             )}
             {!user && (
-                <div className="flex flex-col items-start gap-4">
-                    <Button asChild variant={"outline"}>
+                <div className="flex flex-col items-start gap-4 w-[150px]">
+                    <Button asChild variant={"outline"} className="w-full">
                         <Link href={"/login"}>Sign In</Link>
                     </Button>
-                    <Button asChild variant={"outline"}>
+                    <Button className="w-full" asChild variant={"outline"}>
                         <Link href={"/register"}>Sign Up</Link>
                     </Button>
                 </div>

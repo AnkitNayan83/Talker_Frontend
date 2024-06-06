@@ -30,9 +30,12 @@ export const CommentCard = ({ comment, refetch, setRefetch }: CommentCardProps) 
 
     const getComments = useCallback(async () => {
         const data = await getComment(currComment.id);
-        console.log(data?.comment);
         if (data?.comment) setCurrComment(data.comment);
-    }, [currComment.id]);
+    }, [currComment.id, user]);
+
+    useEffect(() => {
+        getComments();
+    }, [getComments]);
 
     const handleLike = (type: "like" | "unlike") => {
         if (isPending) return;

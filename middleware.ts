@@ -33,8 +33,10 @@ export default auth(async (req) => {
     }
 
     const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
-
-    const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
+    const isPublicRoute =
+        publicRoutes.includes(nextUrl.pathname) ||
+        nextUrl.pathname.startsWith("/post/") ||
+        nextUrl.pathname.startsWith("/comment/");
 
     const isAuthRoutes = authRoutes.includes(nextUrl.pathname);
 

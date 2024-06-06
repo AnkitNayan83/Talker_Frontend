@@ -4,10 +4,9 @@ import Image from "next/image";
 import { Card, CardContent, CardDescription, CardFooter, CardTitle } from "../ui/card";
 import { EllipsisVertical, Heart, MessageCircle, Trash } from "lucide-react";
 import { Post } from "@/lib/types";
-import { useCallback, useEffect, useState, useTransition } from "react";
+import { useCallback, useState, useTransition } from "react";
 import { useCurrentUser } from "@/hooks/user";
 import { HeartFilled } from "../heart-filled";
-import { usePostLike } from "@/hooks/post";
 import { toast } from "sonner";
 import { deletePost, getPostById, like, unlike } from "@/actions/post";
 import { signOut } from "next-auth/react";
@@ -25,14 +24,15 @@ import {
 interface PostCardProps {
     post: Post;
     loadComments: boolean;
+    isLikedByUser: boolean;
 }
 
-export const PostCard = ({ post, loadComments }: PostCardProps) => {
+export const PostCard = ({ post, loadComments, isLikedByUser }: PostCardProps) => {
     const user = useCurrentUser();
     const [showComments, setShowComments] = useState(loadComments);
     const [isPending, startTransition] = useTransition();
     const [currPost, setCurrPost] = useState<Post>(post);
-    const [isLiked, setIsLiked] = useState(usePostLike({ post: currPost }));
+    const [isLiked, setIsLiked] = useState(isLikedByUser);
     const router = useRouter();
 
     const updatedPost = useCallback(async () => {

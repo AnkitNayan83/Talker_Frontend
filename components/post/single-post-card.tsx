@@ -3,13 +3,15 @@ import { Loader, MoveLeft } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { PostCard } from "./post-card";
+import { isLikedByUser } from "@/lib/post";
 
 interface SinglePostCardProps {
     post: Post;
     loadComments: boolean;
 }
 
-export const SinglePostCard = ({ post, loadComments }: SinglePostCardProps) => {
+export const SinglePostCard = async ({ post, loadComments }: SinglePostCardProps) => {
+    const isLiked = await isLikedByUser(post);
     if (post === null) {
         return (
             <div className="flex items-center justify-center animate-spin">
@@ -27,7 +29,7 @@ export const SinglePostCard = ({ post, loadComments }: SinglePostCardProps) => {
                 <h1>Talk</h1>
             </div>
             <div className="w-full">
-                <PostCard post={post} loadComments={loadComments} />
+                <PostCard isLikedByUser={isLiked} post={post} loadComments={loadComments} />
             </div>
         </div>
     );

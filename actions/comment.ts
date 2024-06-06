@@ -6,17 +6,16 @@ import { CommentSchema } from "@/schemas";
 import * as z from "zod";
 
 export const comment = async (values: z.infer<typeof CommentSchema>, postId: string) => {
+    const user = await CurrentUser();
+    if (!user) {
+        return { error: "Please login to comment in this post" };
+    }
     const validateFields = CommentSchema.safeParse(values);
 
     if (!validateFields.success) {
         return {
             error: "Comment cannot be empty",
         };
-    }
-
-    const user = await CurrentUser();
-    if (!user) {
-        return { error: "unauthorized" };
     }
     const token = user.access_token;
     try {
@@ -36,7 +35,6 @@ export const getPostComments = async (postId: string) => {
 
     try {
         const { data } = await api.get(`/comment/post/${postId}`);
-        console.log(data);
         return { comments: data.comments };
     } catch (error: any) {
         return { error: error?.response?.data?.message || "Something went wrong" };
@@ -68,7 +66,6 @@ export const like = async (commentId: string) => {
         );
         return { success: "liked" };
     } catch (error: any) {
-        console.log(error);
         return { error: error?.response?.data?.message || "Something went wrong" };
     }
 };
@@ -85,7 +82,6 @@ export const unlike = async (commentId: string) => {
         });
         return { success: "liked" };
     } catch (error: any) {
-        console.log(error);
         return { error: error?.response?.data?.message || "Something went wrong" };
     }
 };
@@ -108,7 +104,7 @@ export const deleteComment = async (commentId: string) => {
 
 export const reply = async (values: z.infer<typeof CommentSchema>, commentId: string) => {
     const user = await CurrentUser();
-    if (!user) return { error: "unauthorized" };
+    if (!user) return { error: "Please login to reply on this comment" };
     const token = user.access_token;
     try {
         const { data } = await api.post(`/comment/reply/${commentId}`, values, {

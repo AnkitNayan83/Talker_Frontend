@@ -58,7 +58,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         async jwt({ token, user }) {
             const isInitialSignIn = !!user;
             if (isInitialSignIn) {
-                console.log(user);
                 if (!token.sub) return token;
                 token.firstName = user?.firstName;
                 token.lastName = user?.lastName;

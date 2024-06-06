@@ -24,23 +24,15 @@ export const post = async (values: z.infer<typeof PostSchema>) => {
         });
         return { post: data.post };
     } catch (error: any) {
-        console.log(error);
-
         return { error: error?.response?.data?.message || "Something went wrong" };
     }
 };
 
 export const getPostById = async (id: string) => {
     if (!id) return null;
-    const user = await CurrentUser();
-    if (!user) return { error: "Unauthorized" };
 
     try {
-        const { data } = await api.get(`/post/${id}`, {
-            headers: {
-                Authorization: `Bearer ${user.access_token}`,
-            },
-        });
+        const { data } = await api.get(`/post/${id}`);
 
         return { post: data.post };
     } catch (error: any) {
@@ -89,7 +81,6 @@ export const unlike = async (postId: string) => {
         });
         return { success: "unliked" };
     } catch (error: any) {
-        console.log(error);
         return { error: error?.response?.data?.message || "Something went wrong" };
     }
 };
@@ -106,7 +97,6 @@ export const deletePost = async (postId: string) => {
         });
         return { success: "deleted" };
     } catch (error: any) {
-        console.log(error);
         return { error: error?.response?.data?.message || "Something went wrong" };
     }
 };

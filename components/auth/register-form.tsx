@@ -35,7 +35,6 @@ export const RegisterForm = () => {
         startTransistion(() => {
             register(data)
                 .then((res) => {
-                    console.log(res);
                     if (res?.error) {
                         setError(res.error);
                         form.reset();
@@ -46,7 +45,6 @@ export const RegisterForm = () => {
                     }
                 })
                 .catch((err) => {
-                    console.log(err);
                     setError("Something went wrong");
                     form.reset();
                 });

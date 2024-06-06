@@ -10,6 +10,6 @@ export const useCommentLike = ({ comment }: CommentLikeProps) => {
     if (!user) return false;
     const likes = comment.likes;
     if (!likes) return false;
-    const bl = likes.some((like) => like.user.id === user.id);
+    const bl = likes.some((like) => like.userId === user.id);
     return bl;
 };

@@ -11,7 +11,6 @@ export const news = cache(async () => {
         );
         return { news: data.results };
     } catch (error: any) {
-        console.log(error);
         return { error: error?.response?.data?.message || "Something went wrong" };
     }
 });

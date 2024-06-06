@@ -5,7 +5,6 @@ import { CommentForm } from "./comment-form";
 import { CommentCard } from "./comment-card";
 import { useCallback, useEffect, useState } from "react";
 import { getPostComments } from "@/actions/comment";
-
 interface CommentsProps {
     comments: Comment[];
     postId: string;
@@ -27,14 +26,16 @@ export const Comments = ({ comments, postId }: CommentsProps) => {
     return (
         <div className="flex flex-col gap-4 w-full">
             <CommentForm postId={postId} setRefetch={setRefetch} refetch={refetch} />
-            {currComments?.map((comment) => (
-                <CommentCard
-                    key={comment.id}
-                    comment={comment}
-                    setRefetch={setRefetch}
-                    refetch={refetch}
-                />
-            ))}
+            {currComments?.map((comment) => {
+                return (
+                    <CommentCard
+                        key={comment.id}
+                        comment={comment}
+                        setRefetch={setRefetch}
+                        refetch={refetch}
+                    />
+                );
+            })}
         </div>
     );
 };

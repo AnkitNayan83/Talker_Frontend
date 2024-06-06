@@ -87,7 +87,7 @@ export const SingleCommentCard = ({ comment }: CommentCardProps) => {
     };
 
     return (
-        <Card className="p-2 md:w-[760px]">
+        <Card className="px-2 md:w-[760px]">
             <CardTitle className="p-2 flex items-center justify-between">
                 <div className="flex flex-col gap-2 items-center">
                     <Link
@@ -151,7 +151,7 @@ export const SingleCommentCard = ({ comment }: CommentCardProps) => {
             </Link>
 
             <CardFooter className="flex flex-col items-start gap-4 justify-center w-full animate-out">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 mb-4">
                     {isLiked ? (
                         <HeartFilled handleLike={handleLike} />
                     ) : (

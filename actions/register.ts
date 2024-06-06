@@ -12,10 +12,8 @@ export const register = async (values: z.infer<typeof RegisterSchema>) => {
 
     try {
         const { data } = await api.post("/auth/register", values);
-        console.log(data.message);
         return { success: data.message || "Verification link sent to your email" };
     } catch (error: any) {
-        console.log(error?.response?.data?.message);
         return { error: error?.response?.data?.message || "Something went wrong!" };
     }
 };

@@ -27,11 +27,9 @@ export const PostForm = () => {
     });
 
     const handelSubmit = (values: z.infer<typeof PostSchema>) => {
-        console.log(values);
         startTransistion(() => {
             post(values)
                 .then((res) => {
-                    console.log(res);
                     if (res?.error) {
                         form.reset();
                         if (res.error === "unauthorized" || res.error === "TOKEN ERROR") {
@@ -49,7 +47,6 @@ export const PostForm = () => {
                     }
                 })
                 .catch((error) => {
-                    console.log(error);
                     toast.error("Something went wrong");
                 });
         });
